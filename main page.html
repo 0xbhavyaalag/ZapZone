@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAPZONE - EV Charging Solutions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #f1c40f;
+            --text-color: #2c3e50;
+            --light-bg: #ecf0f1;
+            --gradient-start: #3498db;
+            --gradient-end: #2980b9;
+            --electric-blue: #3498db;
+            --dark-blue: #2c3e50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo img {
+            height: 50px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .logo img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .logo h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        nav a:hover::before {
+            transform: scaleX(1);
+        }
+
+        nav a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        #hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            margin-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(52,152,219,0.2), rgba(41,128,185,0.2));
+            animation: gradientShift 8s ease infinite;
+        }
+
+        #hero h1 {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: fadeIn 1s ease-in;
+            position: relative;
+        }
+
+        .vehicle-badge {
+            background-color: var(--electric-blue);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+
+        #hero button {
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #hero button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        #hero button:hover::before {
+            transform: translateX(100%);
+        }
+
+        #hero button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        #about {
+            padding: 5rem 2rem;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #about::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%233498db" fill-opacity="0.05" d="M0 0h100v100H0z"/></svg>');
+            opacity: 0.1;
+        }
+
+        #about h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--primary-color);
+            position: relative;
+        }
+
+        #about h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        }
+
+        .vehicle-list {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .vehicle-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 300px;
+            cursor: pointer;
+            border: 2px solid var(--electric-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vehicle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(52,152,219,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .vehicle-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .vehicle-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border-color: var(--dark-blue);
+        }
+
+        .vehicle-card i {
+            font-size: 4rem;
+            color: var(--electric-blue);
+            margin: 2rem 0;
+            transition: transform 0.3s ease;
+        }
+
+        .vehicle-card:hover i {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .vehicle-card h5 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .vehicle-features {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .vehicle-feature {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 200px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--electric-blue);
+        }
+
+        .vehicle-feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(52,152,219,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .vehicle-feature:hover::before {
+            transform: translateX(100%);
+        }
+
+        .vehicle-feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .vehicle-feature i {
+            font-size: 2rem;
+            color: var(--electric-blue);
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .vehicle-feature:hover i {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        #feature {
+            padding: 5rem 2rem;
+            background-color: var(--light-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%233498db" fill-opacity="0.05" d="M0 0h100v100H0z"/></svg>');
+            opacity: 0.1;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-align: center;
+            overflow: hidden;
+            border: 2px solid var(--electric-blue);
+            position: relative;
+        }
+
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(52,152,219,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .feature-item:hover::before {
+            transform: translateX(100%);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            border-color: var(--dark-blue);
+        }
+
+        .feature-item i {
+            font-size: 4rem;
+            color: var(--electric-blue);
+            margin: 2rem 0;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover i {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="white" fill-opacity="0.1" d="M0 0h100v100H0z"/></svg>');
+        }
+
+        footer p {
+            margin-bottom: 1rem;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        footer a:hover::before {
+            transform: scaleX(1);
+        }
+
+        footer a:hover {
+            transform: translateY(-2px);
+        }
+
+        #contact {
+            margin-top: 2rem;
+        }
+
+        #contact h4 {
+            color: white;
+            margin-top: 1rem;
+            font-size: 1.2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            nav ul {
+                margin-top: 1rem;
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            #hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .vehicle-list {
+                gap: 2rem;
+            }
+
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.jpg" alt="logo" class="logo">
+            <h1>Zapzone</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#about"><i class="fas fa-info-circle"></i> About</a></li>
+                <li><a href="#services"><i class="fas fa-cogs"></i> Services</a></li>
+                <li><a href="#contact"><i class="fas fa-envelope"></i> Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+        <section id="hero">
+            <h1>Electric Vehicle Charging Station</h1>
+        <div class="vehicle-badge">
+            <i class="fas fa-bolt"></i>
+            <span>Fast Charging Solutions</span>
+        </div>
+        <button onclick="window.location.href='#feature'">Explore Now <i class="fas fa-arrow-right"></i></button>
+        </section>
+
+        <section id="about">
+        <h2>Choose Your Vehicle</h2>
+        <div class="vehicle-features">
+            <div class="vehicle-feature">
+                <i class="fas fa-bolt"></i>
+                <h4>Fast Charging</h4>
+                <p>Quick Power Solutions</p>
+            </div>
+            <div class="vehicle-feature">
+                <i class="fas fa-map-marker-alt"></i>
+                <h4>Easy Location</h4>
+                <p>Find Stations Near You</p>
+            </div>
+            <div class="vehicle-feature">
+                <i class="fas fa-clock"></i>
+                <h4>24/7 Service</h4>
+                <p>Always Available</p>
+            </div>
+        </div>
+        <div class="vehicle-list">
+            <div class="vehicle-card" onclick="window.location.href='index.html'">
+                <i class="fas fa-car"></i>
+                <h5>Four Wheeler <i class="fas fa-car"></i></h5>
+                <p>Fast charging for electric cars</p>
+                <div class="vehicle-features" style="margin-top: 1rem;">
+                    <div class="vehicle-feature">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <p>Fast Charging</p>
+                    </div>
+                    <div class="vehicle-feature">
+                        <i class="fas fa-battery-full"></i>
+                        <p>High Capacity</p>
+                    </div>
+                </div>
+            </div>
+            <div class="vehicle-card" onclick="window.location.href='_indexlogin.html'">
+                <i class="fas fa-motorcycle"></i>
+                <h5>Two Wheeler <i class="fas fa-motorcycle"></i></h5>
+                <p>Efficient charging for electric bikes</p>
+                <div class="vehicle-features" style="margin-top: 1rem;">
+                    <div class="vehicle-feature">
+                        <i class="fas fa-bolt"></i>
+                        <p>Quick Charge</p>
+                    </div>
+                    <div class="vehicle-feature">
+                        <i class="fas fa-battery-three-quarters"></i>
+                        <p>Optimal Power</p>
+                    </div>
+                </div>
+                    </div>
+            </div>
+        </section>
+
+          <section id="feature">
+            <div class="feature-list">
+            <div class="feature-item">
+                <i class="fas fa-bolt"></i>
+                <h3>Fast Charging</h3>
+                <p>Quick and efficient charging solutions</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Easy Location</h3>
+                <p>Find charging stations near you</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-chart-line"></i>
+                <h3>Smart Monitoring</h3>
+                <p>Real-time charging status updates</p>
+            </div>
+            </div>
+          </section>
+
+    <footer>
+        <div class="vehicle-features">
+            <div class="vehicle-feature">
+                <i class="fas fa-phone"></i>
+                <h4>Contact Us</h4>
+                <p>+1 234 567 890</p>
+            </div>
+            <div class="vehicle-feature">
+                <i class="fas fa-envelope"></i>
+                <h4>Email</h4>
+                <p>info@zapzone.com</p>
+            </div>
+            <div class="vehicle-feature">
+                <i class="fas fa-map-marker-alt"></i>
+                <h4>Location</h4>
+                <p>123 Electric Avenue</p>
+            </div>
+        </div>
+        <div id="contact">
+            <h4>Follow Us</h4>
+            <div style="margin-top: 1rem;">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

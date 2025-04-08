@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Traffic Detection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/maps.css">
+    <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/plugins/SearchBox/2.23.1/SearchBox.css">
+    <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/css-styles/traffic-incidents.css">
+    <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/css-styles/routing.css">
+    <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/css-styles/poi.css">
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #2c3e50;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: var(--primary-color) !important;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .navbar-brand i {
+            margin-right: 8px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 350px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        #map {
+            margin-left: 350px;
+            height: 100vh;
+        }
+
+        .label {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .row-border {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1rem;
+        }
+
+        .traffic-control {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle {
+            background-color: var(--secondary-color);
+        }
+
+        input:checked + .toggle:before {
+            transform: translateX(26px);
+        }
+
+        .btn-block {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-block:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .traffic-text {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .incident-list {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .incident-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+
+        .incident-item:last-child {
+            border-bottom: none;
+        }
+
+        .incident-item:hover {
+            background: var(--light-bg);
+            transform: translateX(5px);
+        }
+
+        .legend {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: 1.5rem;
+        }
+
+        .legend-font {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .traffic-color {
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+            }
+
+            #map {
+                margin-left: 0;
+                height: 70vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="mindex.html">
+                <i class="fas fa-traffic-light"></i> Traffic Detection
+            </a>
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <div class="traffic-control">
+            <div class="label">Choose your location</div>
+            <div id="search-panel-container">
+                <div id="search-panel" class="pb-4"></div>
+                        </div>
+                    </div>
+
+        <div class="traffic-control">
+            <div class="label">Show traffic layers</div>
+            <div class="row align-items-center py-2">
+                <div class="col-2">
+                    <i class="fas fa-car-crash"></i>
+                </div>
+                <div class="col-7">
+                                <label for="incidents-toggle" class="traffic-text">Traffic incidents</label>
+                            </div>
+                <div class="col-3 text-right">
+                                <label class="switch">
+                        <input id="incidents-toggle" type="checkbox">
+                                    <span class="toggle round"></span>
+                                </label>
+                            </div>
+                        </div>
+            <div class="row align-items-center py-2">
+                <div class="col-2">
+                    <i class="fas fa-road"></i>
+                            </div>
+                <div class="col-7">
+                                <label for="flow-toggle" class="traffic-text">Traffic flow</label>
+                            </div>
+                <div class="col-3 text-right">
+                                <label class="switch">
+                        <input id="flow-toggle" type="checkbox">
+                                    <span class="toggle round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+        <div class="traffic-control">
+            <div class="label">Bounding box for traffic incidents</div>
+                        <button id="bounding-box-button" type="button" class="btn btn-block my-2">
+                <i class="fas fa-draw-polygon"></i> DRAW BOUNDING BOX
+                        </button>
+                    </div>
+
+        <div class="incident-list">
+            <div class="label">Traffic Incidents</div>
+            <div id="incident-list" class="list-group"></div>
+                </div>
+
+        <div class="legend">
+            <div class="row py-2">
+                <div class="col-6">
+                    <span class="legend-font">Congested</span>
+                </div>
+                <div class="col-6 text-right">
+                                <span class="legend-font">Free</span>
+                </div>
+            </div>
+            <div class="row mx-0">
+                <div class="col traffic-color" style="background-color: #6e6e6e;"></div>
+                <div class="col traffic-color" style="background-color: rgba(245, 8, 2, 0.5);"></div>
+                <div class="col traffic-color" style="background-color: #ff2323;"></div>
+                <div class="col traffic-color" style="background-color: #fad900;"></div>
+                <div class="col traffic-color" style="background-color: #ffff37;"></div>
+                <div class="col traffic-color" style="background-color: #2bc82b;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <div id="popup-wrapper"></div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/maps-web.min.js"></script>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/services/services-web.min.js"></script>
+    <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/plugins/SearchBox/2.23.1/SearchBox-web.js"></script>
+    <script src="traffic.js"></script>
+</body>
+
+</html>
