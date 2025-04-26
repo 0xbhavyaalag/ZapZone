@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAPZONE - Scotty's Car Charging</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #2ecc71;
+            --text-color: #2c3e50;
+            --light-bg: #ecf0f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .motion-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+            opacity: 0.1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .car-container {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            height: 600px;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2rem;
+        }
+
+        .car-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .car-content h2 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .car-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+            transform: scaleX(1);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .car-content p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .car-features {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--light-bg);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .car-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .car-button {
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .car-button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .car-image {
+            flex: 1;
+            max-width: 500px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: scale(1);
+            transition: transform 0.5s ease;
+        }
+
+        .car-image:hover {
+            transform: scale(1.05);
+        }
+
+        .back-button {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            padding: 0.5rem 1rem;
+            background: var(--light-bg);
+            color: var(--text-color);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-button:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .car-container {
+                height: auto;
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .car-content {
+                order: 2;
+            }
+            
+            .car-image {
+                order: 1;
+                margin-bottom: 2rem;
+            }
+            
+            .car-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="motion-bg"></div>
+
+    <div class="car-container">
+        <button class="back-button" onclick="window.location.href='index.html'">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </button>
+
+        <div class="car-content">
+            <h2>Scotty's Car Charging</h2>
+            <p>Premium charging stations for your electric vehicles. Experience fast charging with our state-of-the-art technology.</p>
+            
+            <div class="car-features">
+                <div class="feature-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>Super Fast Charging</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Advanced Safety</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Multiple Locations</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-clock"></i>
+                    <span>24/7 Service</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-battery-full"></i>
+                    <span>Smart Monitoring</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-wifi"></i>
+                    <span>Remote Control</span>
+                </div>
+            </div>
+
+            <div class="car-buttons">
+                <button class="car-button" onclick="window.location.href='index.html'">
+                    <i class="fas fa-bolt"></i> Start Charging
+                </button>
+                <button class="car-button" onclick="window.location.href='index.html'">
+                    <i class="fas fa-map-marker-alt"></i> Find Station
+                </button>
+            </div>
+        </div>
+
+        <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Scotty's Car Charging" class="car-image">
+    </div>
+</body>
+</html> 

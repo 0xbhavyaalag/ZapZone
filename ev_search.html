@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>ZapZone EV Search</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.36.1/maps/maps.css">
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.36.1/maps/maps-web.min.js"></script>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.36.1/services/services-web.min.js"></script>
+  <script src="chargingAvailability.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --text-color: #2c3e50;
+      --light-bg: #f8f9fa;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+    }
+
+    .navbar {
+      background-color: var(--primary-color) !important;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: 600;
+    }
+
+    .navbar-brand i {
+      margin-right: 8px;
+    }
+
+    #left {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 350px;
+      background: white;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    #right {
+      margin-left: 350px;
+      height: 100vh;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    #controls {
+      padding: 1.5rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+      border-radius: 25px;
+      padding: 0.8rem 1.2rem;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .btn-primary {
+      background-color: var(--secondary-color);
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .loc {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .companies-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .companies-section h3 {
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .company-logos {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .company-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      padding: 0.5rem;
+      background: var(--light-bg);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .company-logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .search-results {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .result-item {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+      transition: all 0.3s ease;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-item:hover {
+      background: var(--light-bg);
+      transform: translateX(5px);
+    }
+
+    .result-item h4 {
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .result-item p {
+      color: var(--text-color);
+      margin-bottom: 0;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      #left {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+      }
+
+      #right {
+        margin-left: 0;
+        height: 70vh;
+      }
+
+      .company-logos {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="mindex.html">
+        <i class="fas fa-search-location"></i> EV Station Search
+      </a>
+    </div>
+  </nav>
+
+  <div id="left">
+    <div id="controls">
+      <div class="form-group">
+        <label for="location" class="loc">
+          <i class="fas fa-map-marker-alt"></i> Search Location
+        </label>
+        <input type="text" class="form-control" id="location" placeholder="Enter your location">
+      </div>
+      
+      <div class="form-group">
+        <label for="distance" class="loc">
+          <i class="fas fa-ruler"></i> Maximum Distance (km)
+        </label>
+        <input type="number" class="form-control" id="distance" value="10" min="1" max="100">
+      </div>
+      
+      <button class="btn btn-primary" onclick="findLocation()">
+        <i class="fas fa-search"></i> Find Stations
+      </button>
+    </div>
+
+    <div class="companies-section">
+      <h3>Our Partners</h3>
+      <div class="company-logos">
+        <img src="tata-power.jpg" class="company-logo" alt="Tata Power">
+        <img src="ather.jpg" class="company-logo" alt="Ather">
+        <img src="images.jpeg" class="company-logo" alt="EV Company">
+      </div>
+    </div>
+
+    <div id="summary" class="search-results">
+      <h4>Search Results</h4>
+      <!-- Results will be populated here -->
+    </div>
+  </div>
+
+  <div id="right">
+    <div id="map" class="map"></div>
+  </div>
+
+  <script src="ev_search.js"></script>
+</body>
+
+</html>

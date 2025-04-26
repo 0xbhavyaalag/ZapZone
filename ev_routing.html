@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>EV Routing</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.36.1/maps/maps.css">
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.36.1/maps/maps-web.min.js"></script>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.36.1/services/services-web.min.js"></script>
+  <script src="chargingAvailability.js"></script>
+  <script src="calculateLongDistanceEVRoute.js"></script>
+  <script src="ev_model.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+      --text-color: #2c3e50;
+      --light-bg: #f8f9fa;
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--light-bg);
+    }
+
+    .navbar {
+      background-color: var(--primary-color) !important;
+      padding: 1rem 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: 600;
+    }
+
+    .navbar-brand i {
+      margin-right: 8px;
+    }
+
+    #left {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 350px;
+      background: white;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    #right {
+      margin-left: 350px;
+      height: 100vh;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    #controls {
+      padding: 1.5rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+      border-radius: 25px;
+      padding: 0.8rem 1.2rem;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .btn-primary {
+      background-color: var(--secondary-color);
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .loc {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    #summary {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .route-info {
+      background: var(--light-bg);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .route-info h4 {
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .route-info p {
+      color: var(--text-color);
+      margin-bottom: 0;
+    }
+
+    .icon-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--secondary-color);
+      color: white;
+      border-radius: 50%;
+      margin-right: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      #left {
+        width: 100%;
+        height: auto;
+        position: relative;
+        box-shadow: none;
+      }
+
+      #right {
+        margin-left: 0;
+        height: 70vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="mindex.html">
+        <i class="fas fa-route"></i> EV Routing
+      </a>
+    </div>
+  </nav>
+
+  <div id="left">
+    <div id="controls">
+      <div class="form-group">
+        <label for="start" class="loc">
+          <i class="fas fa-map-marker-alt"></i> Starting Location
+        </label>
+        <input type="text" class="form-control" id="start" placeholder="Enter starting point">
+      </div>
+      
+      <div class="form-group">
+        <label for="finish" class="loc">
+          <i class="fas fa-flag-checkered"></i> Destination
+        </label>
+        <input type="text" class="form-control" id="finish" placeholder="Enter destination">
+      </div>
+      
+      <button id="calculate" class="btn btn-primary" onclick="findStart()">
+        <i class="fas fa-route"></i> Calculate Route
+      </button>
+    </div>
+
+    <div id="summary">
+      <h4 class="mb-3">Route Information</h4>
+      <div class="route-info">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-box">
+            <i class="fas fa-road"></i>
+          </div>
+          <h5 class="mb-0">Total Distance</h5>
+        </div>
+        <p id="distance">-</p>
+      </div>
+      
+      <div class="route-info">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-box">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h5 class="mb-0">Estimated Time</h5>
+        </div>
+        <p id="time">-</p>
+      </div>
+      
+      <div class="route-info">
+        <div class="d-flex align-items-center mb-2">
+          <div class="icon-box">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h5 class="mb-0">Charging Stops</h5>
+        </div>
+        <p id="stops">-</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="right">
+    <div id="map" class="map"></div>
+  </div>
+
+  <script src="ev_routing.js"></script>
+</body>
+
+</html>
